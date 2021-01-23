@@ -292,6 +292,35 @@ describe('SCRAMBLE#iterator', () => {
 });
 
 describe('SCRAMBLE#options', () => {
+  it('throws for invalid maximum', () => {
+    let trash;
+    ASSERT.throws(() => {
+      trash = new SCRAMBLE(-2);
+    }, 'did not throw for negative numbers');
+
+    ASSERT.throws(() => {
+      trash = new SCRAMBLE(1);
+    }, 'did not throw for number smaller than 2');
+
+    ASSERT.doesNotThrow(() => {
+      trash = new SCRAMBLE(2);
+    }, 'did throw for exactly 2');
+
+    ASSERT.doesNotThrow(() => {
+      trash = new SCRAMBLE((2 ** 31) - 1);
+    }, 'did throw for max int');
+
+    ASSERT.throws(() => {
+      trash = new SCRAMBLE(2 ** 31);
+    }, 'did not throw for one higher than signed 32-bit');
+
+    ASSERT.throws(() => {
+      trash = new SCRAMBLE(Number.MAX_SAFE_INTEGER);
+    }, 'did not throw for any higher number');
+    ASSERT.ok(trash);
+  });
+
+
   it('allows for use of loop', () => {
     const count = 123;
     const uut = new SCRAMBLE(count, 0, 0, true);
