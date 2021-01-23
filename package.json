@@ -12,7 +12,8 @@
     "benchmark": "node ./benchmark/bitcount.js & node ./benchmark/highestBit.js & node ./benchmark/offset.js & node ./benchmark/general.js",
     "mocha": "mocha -- -t 16000 test/*-test.js",
     "nyc": "nyc --reporter=lcov npm run-script mocha",
-    "test": "npm run-script nyc && codecov"
+    "test": "npm run-script nyc",
+    "test:coverage": "npm test && codecov"
   },
   "repository": {
     "type": "git",
