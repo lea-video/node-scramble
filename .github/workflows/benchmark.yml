@@ -1,4 +1,4 @@
-name: Node.js CI
+name: Benchmarks
 
 on: [push, pull_request]
 
