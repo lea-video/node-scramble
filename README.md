@@ -1,4 +1,7 @@
 # node-scramble
+[![codecov](https://codecov.io/gh/lea-video/node-scramble/branch/master/graph/badge.svg)](https://codecov.io/gh/lea-video/node-scramble)
+[![Known Vulnerabilities](https://snyk.io/test/github/lea-video/node-scramble/badge.svg)](https://snyk.io/test/github/lea-video/node-scramble)
+
 Iterative & Unique Random Number Generator
 
 This library is an iteration of the greate [bit-meddler module by alanmacleod](https://github.com/alanmacleod/bit-meddler).

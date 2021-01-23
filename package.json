@@ -9,7 +9,10 @@
   "scripts": {
     "lint": "eslint ./",
     "lint:fix": "eslint --fix ./",
-    "benchmark": "node ./benchmark/bitcount.js & node ./benchmark/highestBit.js & node ./benchmark/offset.js & node ./benchmark/general.js"
+    "benchmark": "node ./benchmark/bitcount.js & node ./benchmark/highestBit.js & node ./benchmark/offset.js & node ./benchmark/general.js",
+    "mocha": "mocha -- -t 16000 test/*-test.js",
+    "nyc": "nyc --reporter=lcov npm run-script mocha",
+    "test": "npm run-script nyc && codecov"
   },
   "repository": {
     "type": "git",
@@ -22,6 +25,10 @@
   },
   "homepage": "https://github.com/lea-video/node-scramble#readme",
   "devDependencies": {
-    "eslint": "^7.18.0"
+    "assert-diff": "^3.0.2",
+    "codecov": "^3.8.1",
+    "eslint": "^7.18.0",
+    "mocha": "^8.2.1",
+    "nyc": "^15.1.0"
   }
 }
