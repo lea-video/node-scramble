@@ -1,0 +1,27 @@
+{
+  "name": "scramble",
+  "version": "1.0.0",
+  "description": "Iterative & Unique Random Number Generator",
+  "main": "./lib/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "lint": "eslint ./",
+    "lint:fix": "eslint --fix ./",
+    "benchmark": "node ./benchmark/bitcount.js & node ./benchmark/highestBit.js & node ./benchmark/offset.js & node ./benchmark/general.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lea-video/node-scramble.git"
+  },
+  "author": "Tobias Kutscha (https://github.com/TimeForANinja)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lea-video/node-scramble/issues"
+  },
+  "homepage": "https://github.com/lea-video/node-scramble#readme",
+  "devDependencies": {
+    "eslint": "^7.18.0"
+  }
+}

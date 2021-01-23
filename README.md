@@ -21,6 +21,15 @@ const s = new scramble(1000);
 const n = s.next(); // give me a number
 ```
 
+or if you prefer the good old iterator
+```js
+const scramble = require('node-scramble');
+const s = new scramble(1000);
+for (const n of s) {
+  dosth(n);
+}
+```
+
 Calling `.next()` will return every number between 1 and 1000 in a scrambled, pseudorandom order. The method will return `null` once every number has been returned exactly once.
 
 If you missed something there's the option to use `.current()`. If you missed even more you can use `.prev()` to return the LSFR to the previous state, also returning the previous number (or `null`).
