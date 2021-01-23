@@ -2,7 +2,7 @@ const ASSERT = require('assert-diff');
 ASSERT.options.strict = true;
 const SCRAMBLE = require('../');
 
-describe('SCRAMBLE', () => {
+describe('SCRAMBLE#next', () => {
   it('returns numbers <= maximum', () => {
     const count = 123;
     const uut = new SCRAMBLE(count);
@@ -47,6 +47,73 @@ describe('SCRAMBLE', () => {
     ASSERT.equal(hits.length, count);
     ASSERT.ok(!hits.some(x => x !== 1));
   });
+
+  it('returns null when done', () => {
+    const count = 123;
+    const uut = new SCRAMBLE(123);
+
+    for (let i = 0; i < count; i++) {
+      ASSERT.ok(uut.next() !== null);
+    }
+    ASSERT.equal(uut.next, uut._done);
+    ASSERT.ok(uut.next() === null);
+  });
+
+  it('loops', () => {
+    const count = 7;
+    const uut = new SCRAMBLE(count, 0, 0, true);
+    const r = uut.all();
+    for (let i = 0; i < count; i++) {
+      ASSERT.equal(uut.next(), r[i], `item on index ${i} does differ`);
+    }
+  });
+});
+
+describe('SCRAMBLE#currentPos', () => {
+  it('starts with -1', () => {
+    const uut = new SCRAMBLE(123);
+    ASSERT.equal(uut.currentPos(), -1);
+  });
+
+  it('increments with every next() step', () => {
+    const count = 123;
+    const uut = new SCRAMBLE(count);
+
+    for (let i = 0; i < count; i++) {
+      uut.next();
+      ASSERT.equal(uut.currentPos(), i);
+    }
+  });
+
+  it('stays at maximum-1 after all next()', () => {
+    const count = 123;
+    const uut = new SCRAMBLE(count);
+    // Fastest way to skip through all items
+    uut.all();
+    ASSERT.equal(uut.currentPos(), count - 1);
+  });
+
+  it('decrements with every prev() step', () => {
+    const count = 123;
+    const uut = new SCRAMBLE(count);
+    // Jump to end
+    uut.all();
+    for (let i = count - 1; i > 0; i--) {
+      ASSERT.equal(uut.currentPos(), i);
+      uut.prev();
+    }
+  });
+
+  it('stays at n = 0 after all prev()', () => {
+    const count = 123;
+    const uut = new SCRAMBLE(count);
+    for (let i = 0; i < 5; i++) uut.next();
+    let v;
+    do {
+      v = uut.prev();
+    } while (v);
+    ASSERT.equal(uut.currentPos(), 0);
+  });
 });
 
 describe('SCRAMBLE#prev', () => {
@@ -73,6 +140,125 @@ describe('SCRAMBLE#prev', () => {
     ASSERT.equal(uut.prev(), n1);
     ASSERT.equal(uut.prev(), null);
     ASSERT.equal(uut.prev, uut._done);
+  });
+
+  it('loops', () => {
+    const count = 7;
+    const uut = new SCRAMBLE(count, 0, 0, true);
+
+    uut.next();
+    const r = [];
+    for (let i = 0; i < count; i++) {
+      r.push(uut.prev());
+    }
+    for (let i = 0; i < count; i++) {
+      ASSERT.equal(uut.prev(), r[i], `item on index ${i} does differ`);
+    }
+  });
+});
+
+describe('SCRAMBLE#all', () => {
+  it('equals the next() results', () => {
+    const count = 123;
+    const uut = new SCRAMBLE(count);
+    const r = [];
+    for (let i = 0; i < count; i++) {
+      r.push(uut.next());
+    }
+    ASSERT.deepEqual(r, uut.all());
+  });
+
+  it('length matches the maximum', () => {
+    const count = 123;
+    const uut = new SCRAMBLE(count);
+    ASSERT.equal(uut.all().length, count);
+  });
+
+  it('ignores progress / current state', () => {
+    const count = 123;
+    const uut = new SCRAMBLE(count);
+    // Offset by some items
+    for (let i = 0; i < 5; i++) {
+      uut.next();
+    }
+    // Still returns all items
+    ASSERT.equal(uut.all().length, count);
+  });
+
+  it('sets the iterator to the end position', () => {
+    const count = 123;
+    const uut = new SCRAMBLE(count);
+    uut.all();
+    ASSERT.equal(uut.currentPos(), count - 1);
+  });
+});
+
+describe('SCRAMBLE#lookahead', () => {
+  it('items equal next', () => {
+    const uut = new SCRAMBLE(123);
+    const res = uut.lookahead(10);
+    for (const r of res) {
+      ASSERT.equal(r, uut.next());
+    }
+  });
+
+  it('gives n items if available', () => {
+    const uut = new SCRAMBLE(123);
+    ASSERT.equal(uut.lookahead(10).length, 10);
+  });
+
+  it('gives less items if less are available', () => {
+    const uut = new SCRAMBLE(7);
+    ASSERT.equal(uut.lookahead(10).length, 7);
+  });
+
+  it('does loop if enabled', () => {
+    const uut = new SCRAMBLE(7, 0, 0, true);
+    const res = uut.lookahead(10);
+    const all = uut.all();
+    // Does fetch more then 10
+    ASSERT.equal(res.length, 10);
+    // Results to loop
+    ASSERT.equal(res[7], all[0]);
+    ASSERT.equal(res[8], all[1]);
+  });
+});
+
+describe('SCRAMBLE#lookbehind', () => {
+  it('items equal prev', () => {
+    const uut = new SCRAMBLE(123);
+    // Seek to end
+    uut.all();
+    const res = uut.lookbehind(10);
+    for (const r of res) {
+      ASSERT.equal(r, uut.prev());
+    }
+  });
+
+  it('gives n items if available', () => {
+    const uut = new SCRAMBLE(123);
+    // Seek to end
+    uut.all();
+    ASSERT.equal(uut.lookbehind(10).length, 10);
+  });
+
+  it('gives less items if less are available', () => {
+    const count = 7;
+    const uut = new SCRAMBLE(count);
+    // Seek to end
+    uut.all();
+    ASSERT.equal(uut.lookbehind(2 * count).length, count - 1);
+  });
+
+  it('does loop if enabled', () => {
+    const uut = new SCRAMBLE(7, 0, 0, true);
+    const all = uut.all();
+    const res = uut.lookbehind(10);
+    // Does fetch more then 10
+    ASSERT.equal(res.length, 10);
+    // Results to loop
+    ASSERT.equal(res[7], all[5]);
+    ASSERT.equal(res[8], all[4]);
   });
 });
 
@@ -185,19 +371,6 @@ describe('SCRAMBLE#options', () => {
       ASSERT.ok(Math.abs(uut._outOffset) <= count, `${uut.outOffset} is not between -max and max`);
       ASSERT.ok(!isNaN(uut._outOffset), `${uut.outOffset} is not a number`);
     }
-  });
-});
-
-describe('SCRAMBLE#next', () => {
-  it('returns null when done', () => {
-    const count = 123;
-    const uut = new SCRAMBLE(123);
-
-    for (let i = 0; i < count; i++) {
-      ASSERT.ok(uut.next() !== null);
-    }
-    ASSERT.equal(uut.next, uut._done);
-    ASSERT.ok(uut.next() === null);
   });
 });
 
