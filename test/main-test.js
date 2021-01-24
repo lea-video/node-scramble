@@ -24,6 +24,13 @@ describe('SCRAMBLE#next', () => {
     }
   });
 
+  it('returns numbers > 0', () => {
+    const uut = new SCRAMBLE(5, 0, 0, true);
+
+    for (i = 0; i < 10; i++) uut.next();
+    ASSERT.ok(uut.n < 5);
+  });
+
   it('returns exactly the amount of numbers asked for', () => {
     const count = 123;
     const uut = new SCRAMBLE(count);
@@ -330,6 +337,18 @@ describe('SCRAMBLE#options', () => {
     for (let i = 1; i < count; i++) uut.next();
     const second = uut.next();
     ASSERT.equal(first, second);
+  });
+
+  it('output offset keep items in 0<n<=max range', () => {
+    const count = 123;
+    const uut = new SCRAMBLE(count, 0, -10);
+
+    let v = uut.next();
+    while (v) {
+      ASSERT.ok(v > 0);
+      ASSERT.ok(v <= count);
+      v = uut.next();
+    }
   });
 
   it('allows for use of output offset', () => {
