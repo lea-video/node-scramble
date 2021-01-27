@@ -365,12 +365,13 @@ describe('SCRAMBLE#options', () => {
 
   it('allows for the use of seed', () => {
     const count = 123;
-    const uut_0 = new SCRAMBLE(count);
+    const seed = 42;
+    const uut_0 = new SCRAMBLE(count, seed);
 
     // Offset by a bit
     for (let i = 0; i < 5; i++) uut_0.next();
 
-    const uut_1 = new SCRAMBLE(count, uut_0._cur);
+    const uut_1 = new SCRAMBLE(count, uut_0._cur - 1);
 
     // Compare the next 5
     for (let i = 0; i < 5; i++) {
@@ -383,11 +384,16 @@ describe('SCRAMBLE#options', () => {
     // Create some test units
     const uuts = [
       -500,
+      -124,
+      -123,
+      -122,
       -5,
       -1,
       0,
       1,
+      122,
       123,
+      124,
       500,
       'yey',
     ].map(x => new SCRAMBLE(count, x));
