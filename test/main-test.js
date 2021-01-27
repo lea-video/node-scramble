@@ -27,7 +27,7 @@ describe('SCRAMBLE#next', () => {
   it('returns numbers > 0', () => {
     const uut = new SCRAMBLE(5, 0, 0, true);
 
-    for (i = 0; i < 10; i++) uut.next();
+    for (let i = 0; i < 10; i++) uut.next();
     ASSERT.ok(uut.n < 5);
   });
 
