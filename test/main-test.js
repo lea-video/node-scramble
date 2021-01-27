@@ -363,6 +363,13 @@ describe('SCRAMBLE#options', () => {
     }
   });
 
+  it('defaults seed to 1', () => {
+    const count = 123;
+    const uut = new SCRAMBLE(count);
+
+    ASSERT.equal(uut._start, 1);
+  });
+
   it('allows for the use of seed', () => {
     const count = 123;
     const seed = 42;
